@@ -3,21 +3,26 @@
 
 using namespace std;
 
+static bool allowMove = false;
 Color green = {173, 204, 96, 255};
 Color darkGreen = {43, 51, 24, 255};
 
 int cellSize = 30;
 int cellCount = 25;
+int offset = 75;
+
+double lastUpdateTime = 0;
 
 class Food {
 public:
     Vector2 position = {5, 6};
     Texture2D texture;
 
-    Food() {
+    Food(deque<Vector2> snakeBody) {
         Image image = LoadImage("food.png");
         texture = LoadTextureFromImage(image);
         UnloadImage(image);
+        position = GenerateRandomPos(snakeBody)
     }
 
     // Deconstructor:
@@ -26,14 +31,31 @@ public:
     }
 
 
-    void Draw() {
-        // Draw a color-filled rectangle...
-        DrawRectangle(position.x * cellSize, position.y * cellSize, cellSize, cellSize, darkGreen);
+   void Draw()
+    {
+        DrawTexture(texture, offset + position.x * cellSize, offset + position.y * cellSize, WHITE);
+    }
+
+    Vector2 GenerateRandomCell()
+    {
+        float x = GetRandomValue(0, cellCount - 1);
+        float y = GetRandomValue(0, cellCount - 1);
+        return Vector2{x, y};
+    }
+
+    Vector2 GenerateRandomPos(deque<Vector2> snakeBody)
+    {
+        Vector2 position = GenerateRandomCell();
+        while (ElementInDeque(position, snakeBody)) {
+            position = GenerateRandomCell();
+        }
+        return position;
     }
 };
 
 
 int main() {
+    cout << "Starting the game..." << endl;
     InitWindow(cellSize * cellCount, cellSize * cellCount, "Snake Game");
     SetTargetFPS(60);
 
