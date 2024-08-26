@@ -15,14 +15,14 @@ double lastUpdateTime = 0;
 
 class Food {
 public:
-    Vector2 position = {5, 6};
+    Vector2 position;
     Texture2D texture;
 
-    Food(deque<Vector2> snakeBody) {
+    Food() {
         Image image = LoadImage("food.png");
         texture = LoadTextureFromImage(image);
         UnloadImage(image);
-        position = GenerateRandomPos(snakeBody)
+        position = GenerateRandomPos();
     }
 
     // Deconstructor:
@@ -31,31 +31,20 @@ public:
     }
 
 
-   void Draw()
-    {
+   void Draw() {
         DrawTexture(texture, offset + position.x * cellSize, offset + position.y * cellSize, WHITE);
     }
 
-    Vector2 GenerateRandomCell()
-    {
+    Vector2 GenerateRandomPos() {
         float x = GetRandomValue(0, cellCount - 1);
         float y = GetRandomValue(0, cellCount - 1);
         return Vector2{x, y};
     }
 
-    Vector2 GenerateRandomPos(deque<Vector2> snakeBody)
-    {
-        Vector2 position = GenerateRandomCell();
-        while (ElementInDeque(position, snakeBody)) {
-            position = GenerateRandomCell();
-        }
-        return position;
-    }
 };
 
 
 int main() {
-    cout << "Starting the game..." << endl;
     InitWindow(cellSize * cellCount, cellSize * cellCount, "Snake Game");
     SetTargetFPS(60);
 
