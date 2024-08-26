@@ -1,6 +1,7 @@
 #include <iostream>
 #include <raylib.h>
 #include <deque>
+#include <raymath.h>
 
 using namespace std;
 
@@ -19,6 +20,7 @@ double lastUpdateTime = 0;
 class Snake {
 public:
     deque<Vector2> body = {Vector2{6, 9}, Vector2{5, 9}, Vector2{4, 9}};
+    Vector2 direction = {1, 0};
 
     void Draw() {
         for(unsigned int i = 0; i < body.size(); i++) {
@@ -27,6 +29,13 @@ public:
             Rectangle segment = Rectangle{x * static_cast<float>(cellSize), y * static_cast<float>(cellSize), static_cast<float>(cellSize), static_cast<float>(cellSize)};
             DrawRectangleRounded(segment, 0.5, 6, darkGreen);
         }
+    }
+
+    void Update() {
+        // Removing last segment of snake and adding it to front
+        body.pop_back();
+        body.push_front(Vector2Add(body[0], direction));
+
     }
 
 };
@@ -73,6 +82,7 @@ int main() {
     // Main game loop:
     while (WindowShouldClose() == false) {
         BeginDrawing();
+        snake.Update();
 
         ClearBackground(green);
 
