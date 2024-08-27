@@ -16,6 +16,16 @@ int offset = 75;
 
 double lastUpdateTime = 0;
 
+bool eventTriggered(double interval) {
+    double currentTime = GetTime();
+    if(currentTime - lastUpdateTime >= interval) {
+        lastUpdateTime = currentTime;
+        return true;
+    }
+    return false;
+
+}
+
 
 class Snake {
 public:
@@ -35,9 +45,7 @@ public:
         // Removing last segment of snake and adding it to front
         body.pop_back();
         body.push_front(Vector2Add(body[0], direction));
-
     }
-
 };
 
 
@@ -82,7 +90,10 @@ int main() {
     // Main game loop:
     while (WindowShouldClose() == false) {
         BeginDrawing();
-        snake.Update();
+
+        if(eventTriggered(0.2)) { //if interval has passed...
+            snake.Update();
+        }
 
         ClearBackground(green);
 
