@@ -68,12 +68,12 @@ public:
 
 
    void Draw() {
-        DrawTexture(texture, offset + position.x * cellSize, offset + position.y * cellSize, WHITE);
+        DrawTexture(texture, (offset + position.x * cellSize), (offset + position.y * cellSize), WHITE);
     }
 
     Vector2 GenerateRandomPos() {
-        float x = GetRandomValue(0, cellCount - 1);
-        float y = GetRandomValue(0, cellCount - 1);
+        float x = GetRandomValue(0, (cellCount - 1));
+        float y = GetRandomValue(0, (cellCount - 1));
         return Vector2{x, y};
     }
 
@@ -93,13 +93,22 @@ public:
 
     void Update(){
         snake.Update();
+        EatFood();
+    }
+
+    void EatFood() { 
+        // checking if snake collides with food
+        if(Vector2Equals(snake.body[0], food.position)) {
+            food.position = food.GenerateRandomPos();
+        }
+
     }
 
 };
 
 
 int main() {
-    InitWindow(cellSize * cellCount, cellSize * cellCount, "Snake Game");
+    InitWindow(2 * offset + cellSize * cellCount, 2 * offset + cellSize * cellCount, "Snake");
     SetTargetFPS(60);
 
     Game game = Game();
