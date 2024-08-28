@@ -16,6 +16,15 @@ int offset = 75;
 
 double lastUpdateTime = 0;
 
+bool ElementInDeque(Vector2 element, deque<Vector2> deque) {
+    for (unsigned int i = 0; i < deque.size(); i++) {
+        if (Vector2Equals(deque[i], element)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool eventTriggered(double interval) {
     double currentTime = GetTime();
     if(currentTime - lastUpdateTime >= interval) {
@@ -54,11 +63,11 @@ public:
     Vector2 position;
     Texture2D texture;
 
-    Food() {
+    Food(deque<Vector2> snakeBody) {
         Image image = LoadImage("food.png");
         texture = LoadTextureFromImage(image);
         UnloadImage(image);
-        position = GenerateRandomPos();
+        position = GenerateRandomPos(snakeBody);
     }
 
     // Deconstructor:
@@ -66,24 +75,31 @@ public:
         UnloadTexture(texture);
     }
 
-
    void Draw() {
-        DrawTexture(texture, (offset + position.x * cellSize), (offset + position.y * cellSize), WHITE);
+        DrawTexture(texture, position.x * cellSize, position.y * cellSize, WHITE);
     }
 
-    Vector2 GenerateRandomPos() {
-        float x = GetRandomValue(0, (cellCount - 1));
-        float y = GetRandomValue(0, (cellCount - 1));
+    Vector2 GenerateRandomCell() {
+        float x = GetRandomValue(0, cellCount - 1);
+        float y = GetRandomValue(0, cellCount - 1);
         return Vector2{x, y};
     }
 
+    Vector2 GenerateRandomPos(deque<Vector2> snakeBody) {
+        Vector2 position = GenerateRandomCell();
+
+        while(ElementInDeque(position, snakeBody)) {
+            position = GenerateRandomCell();
+        }
+        return position;
+    }
 };
 
 
 class Game {
 public:
     Snake snake = Snake();
-    Food food = Food();
+    Food food = Food(snake.body);
 
     void Draw() {
         food.Draw();
@@ -99,9 +115,8 @@ public:
     void EatFood() { 
         // checking if snake collides with food
         if(Vector2Equals(snake.body[0], food.position)) {
-            food.position = food.GenerateRandomPos();
+            food.position = food.GenerateRandomPos(snake.body);
         }
-
     }
 
 };
