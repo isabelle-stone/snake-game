@@ -35,11 +35,11 @@ bool eventTriggered(double interval) {
 
 }
 
-
 class Snake {
 public:
     deque<Vector2> body = {Vector2{6, 9}, Vector2{5, 9}, Vector2{4, 9}};
     Vector2 direction = {1, 0};
+    bool addSegment = false;
 
     void Draw() {
         for(unsigned int i = 0; i < body.size(); i++) {
@@ -50,10 +50,17 @@ public:
         }
     }
 
-    void Update() {
-        // Removing last segment of snake and adding it to front
+    void Update() { 
+        if (addSegment == true) {
+            body.push_front(Vector2Add(body[0], direction));
+            addSegment = false;
+        }
+        else { /* Removing last segment of snake and adding it to front */
         body.pop_back();
         body.push_front(Vector2Add(body[0], direction));
+
+        }
+        
     }
 };
 
@@ -70,8 +77,7 @@ public:
         position = GenerateRandomPos(snakeBody);
     }
 
-    // Deconstructor:
-    ~Food() {
+    ~Food() {  /* Deconstructor */
         UnloadTexture(texture);
     }
 
@@ -104,7 +110,6 @@ public:
     void Draw() {
         food.Draw();
         snake.Draw();
-
     }
 
     void Update(){
@@ -116,6 +121,7 @@ public:
         // checking if snake collides with food
         if(Vector2Equals(snake.body[0], food.position)) {
             food.position = food.GenerateRandomPos(snake.body);
+            snake.addSegment = true;
         }
     }
 
@@ -133,10 +139,9 @@ int main() {
     while (WindowShouldClose() == false) {
         BeginDrawing();
 
-        if(eventTriggered(0.2)) { //if interval has passed...
+        if(eventTriggered(0.2)) { /* if interval has passed... */
             game.Update();
         }
-
         if(IsKeyPressed(KEY_UP) && game.snake.direction.y != 1) {
             game.snake.direction = {0, -1};
         }
