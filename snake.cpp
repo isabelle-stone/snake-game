@@ -58,9 +58,11 @@ public:
         else { /* Removing last segment of snake and adding it to front */
         body.pop_back();
         body.push_front(Vector2Add(body[0], direction));
-
         }
-        
+    }
+    void Restart() {
+        body = {Vector2{6, 9}, Vector2{5, 9}, Vector2{4, 9}};
+        direction = {1, 0};
     }
 };
 
@@ -106,6 +108,7 @@ class Game {
 public:
     Snake snake = Snake();
     Food food = Food(snake.body);
+    bool running = true; 
 
     void Draw() {
         food.Draw();
@@ -113,9 +116,12 @@ public:
     }
 
     void Update(){
-        snake.Update();
-        EatFood();
-        CheckInBounds();
+        if (running) {
+            snake.Update();
+            EatFood();
+            CheckInBounds();
+        }
+        
     }
 
     void EatFood() { 
@@ -136,7 +142,9 @@ public:
     }
 
     void GameOver() {
-        cout << "go" << endl;
+        snake.Restart(); 
+        food.position = food.GenerateRandomPos(snake.body);
+        running = false;  // pause game
     }
 
 };
@@ -158,15 +166,19 @@ int main() {
         }
         if(IsKeyPressed(KEY_UP) && game.snake.direction.y != 1) {
             game.snake.direction = {0, -1};
+            game.running = true;
         }
         if(IsKeyPressed(KEY_DOWN)&& game.snake.direction.y != -1) {
             game.snake.direction = {0, 1};
+            game.running = true;
         }
         if(IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1){
             game.snake.direction = {-1, 0};
+            game.running = true;
         }
         if(IsKeyPressed(KEY_RIGHT) && game.snake.direction.x != -1) {
             game.snake.direction = {1, 0};
+            game.running = true;
         }
 
         ClearBackground(green);
