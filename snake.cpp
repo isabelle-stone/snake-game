@@ -12,7 +12,7 @@ Color darkGreen = {43, 51, 24, 255};
 
 int cellSize = 30;
 int cellCount = 25;
-int offset = 75;
+int offset = 75;  // boarder
 
 double lastUpdateTime = 0;
 
@@ -45,7 +45,7 @@ public:
         for(unsigned int i = 0; i < body.size(); i++) {
             float x = static_cast<float>(body[i].x);
             float y = static_cast<float>(body[i].y);
-            Rectangle segment = Rectangle{x * static_cast<float>(cellSize), y * static_cast<float>(cellSize), static_cast<float>(cellSize), static_cast<float>(cellSize)};
+            Rectangle segment = Rectangle{offset + x * static_cast<float>(cellSize), offset + y * static_cast<float>(cellSize), static_cast<float>(cellSize), static_cast<float>(cellSize)};
             DrawRectangleRounded(segment, 0.5, 6, darkGreen);
         }
     }
@@ -66,7 +66,6 @@ public:
     }
 };
 
-
 class Food {
 public:
     Vector2 position;
@@ -84,7 +83,7 @@ public:
     }
 
    void Draw() {
-        DrawTexture(texture, position.x * cellSize, position.y * cellSize, WHITE);
+        DrawTexture(texture, offset + position.x * cellSize, offset + position.y * cellSize, WHITE);
     }
 
     Vector2 GenerateRandomCell() {
@@ -120,6 +119,7 @@ public:
             snake.Update();
             EatFood();
             CheckInBounds();
+            CheckTailCollision();
         }
         
     }
@@ -147,15 +147,22 @@ public:
         running = false;  // pause game
     }
 
+    void CheckTailCollision() {
+        deque<Vector2> tail = snake.body;
+        tail.pop_front();
+        if (ElementInDeque(snake.body[0], tail)) {
+            GameOver(); 
+        }
+    }
+
 };
 
 
 int main() {
-    InitWindow(2 * offset + cellSize * cellCount, 2 * offset + cellSize * cellCount, "Snake");
+    InitWindow(2 * offset + cellSize * cellCount, 2 * offset + cellSize * cellCount, "SNAKE");
     SetTargetFPS(60);
 
     Game game = Game();
-
 
     // Main game loop:
     while (WindowShouldClose() == false) {
@@ -182,6 +189,8 @@ int main() {
         }
 
         ClearBackground(green);
+        DrawRectangleLinesEx(Rectangle{(float)offset - 5, (float)offset - 5, (float)cellSize * cellCount + 10, (float)cellSize * cellCount + 10}, 5, darkGreen);
+
         game.Draw();
 
         EndDrawing();
