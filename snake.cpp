@@ -115,6 +115,7 @@ public:
     void Update(){
         snake.Update();
         EatFood();
+        CheckInBounds();
     }
 
     void EatFood() { 
@@ -123,6 +124,19 @@ public:
             food.position = food.GenerateRandomPos(snake.body);
             snake.addSegment = true;
         }
+    }
+
+    void CheckInBounds() {
+        if (snake.body[0].x == cellCount || snake.body[0].x == -1) { /* if snake is out of bounds*/
+            GameOver();
+        }
+        if (snake.body[0].y == cellCount || snake.body[0].y == -1) {
+            GameOver();
+        }
+    }
+
+    void GameOver() {
+        cout << "go" << endl;
     }
 
 };
